@@ -1,0 +1,5 @@
+armhf/
+filebeat*/
+*.deb
+*.tar.gz
+*.iml
