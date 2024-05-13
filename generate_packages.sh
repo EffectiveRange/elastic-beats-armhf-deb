@@ -45,7 +45,7 @@ package_beat() {
   sed -i "s/.*usr\/share\/${BEAT}\/bin\/${BEAT}.*/${BEAT_MD5}  usr\/share\/${BEAT}\/bin\/${BEAT}/g" "${DEBIAN_DIR}/DEBIAN/md5sums"
 
   # Build the armhf beat deb package
-  cd "${BUILD_DIR}" ; dpkg-deb --root-owner-group --build "${ARMHF_NAME}" ../dist/"${BEAT}-${VERSION}-armv7l.deb"
+  cd "${BUILD_DIR}" ; dpkg-deb -Zxz --root-owner-group --build "${ARMHF_NAME}" ../dist/"${BEAT}-${VERSION}-armv7l.deb"
 }
 
 # Get the version from command line argument or use the latest release version
