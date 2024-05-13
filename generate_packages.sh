@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 package_beat() {
   BEAT=$1
@@ -61,6 +61,8 @@ else
     exit 1
   fi
 fi
+
+export VERSION=$VERSION
 
 INSTALL_DIR=$(pwd)
 
