@@ -62,8 +62,6 @@ else
   fi
 fi
 
-export VERSION=$VERSION
-
 INSTALL_DIR=$(pwd)
 
 # Package each beat
