@@ -1,4 +1,4 @@
-name: Release debian package
+name: Release debian packages
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   publish:
-    name: Publish package
+    name: Publish packages
 
     runs-on: ubuntu-latest
 
@@ -18,15 +18,15 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Build debian package
+      - name: Build debian packages
         run: |
-          ./generate_package.sh
+          ./generate_packages.sh
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Publish distributions
         uses: actions/upload-artifact@v4
         with:
           name: elastic-beats
-          path: ./*-armhf.deb
+          path: dist/*
           if-no-files-found: error
 
   release:
@@ -52,12 +52,11 @@ jobs:
           path: ${{ github.workspace }}/elastic-beats
       - name: Display structure of downloaded files
         run: ls -R ${{ github.workspace }}/elastic-beats
-      - name: Release version tag
+      - name: Release version
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v$VERSION"
+          tag_name: ${{ needs.publish.outputs.version }}
           files: |
             ${{ github.workspace }}/elastic-beats/*
         env:
-          VERSION: ${{ needs.publish.outputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
