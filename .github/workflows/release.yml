@@ -1,0 +1,60 @@
+name: Release debian packages
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  publish:
+    name: Publish packages
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      artifact_id: ${{ steps.publish.outputs.artifact-id }}
+      artifact_url: ${{ steps.publish.outputs.artifact-url }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Build debian packages
+        run: |
+          ./generate_packages.sh "${GITHUB_REF#refs/tags/v}"
+      - name: Publish distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: elastic-beats
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: Create Release
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      discussions: write
+
+    needs: [ publish ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: elastic-beats
+          path: ${{ github.workspace }}/elastic-beats
+      - name: Display structure of downloaded files
+        run: ls -R ${{ github.workspace }}/elastic-beats
+      - name: Release version
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ github.workspace }}/elastic-beats/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
